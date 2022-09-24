@@ -43,5 +43,36 @@ jobs:
         run: | 
           docker build -t ${{ secrets.ARTIFACT_REGISTRY_REPO }}/myapp:latest .
           docker push ${{ secrets.ARTIFACT_REGISTRY_REPO }}/myapp:latest
+  
+  deploy:
+    name: Deploy Gcloud HTTP
+    runs-on: ubuntu-latest
+    needs: build
+    env:
+      IMAGE: ${{ secrets.IMAGE }}
+      MS_NAME: ${{ secrets.APPLICATION }}
+      REGION: ${{ secrets.REGION }}
+      ENTRY_POINT: http
+      DB_LOCAL_HOST: =  ${{ secrets.DB_LOCAL_HOST }}
+      CLOUD_SQL_USERNAME:  ${{ secrets.CLOUD_SQL_USERNAME }}
+      CLOUD_SQL_PASSWORD: = ${{ secrets.CLOUD_SQL_PASSWORD }}
+      CLOUD_SQL_DATABASE_NAME: ${{ secrets.CLOUD_SQL_PASSWORD }}
+      CLOUD_SQL_CONNECTION_NAME:  ${{ secrets.CLOUD_SQL_CONNECTION_NAME }}
+
+
+    steps:
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v0'
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+      - name: Deploy http server
+        run: |
+          gcloud run deploy $MS_NAME \
+            --image $IMAGE \
+            --region $REGION \
+            --platform managed \
+            --update-env-vars "ENTRY_POINT=$ENTRY_POINT,DB_LOCAL_HOST=$DB_LOCAL_HOST,CLOUD_SQL_USERNAME=$CLOUD_SQL_USERNAME,CLOUD_SQL_PASSWORD=$CLOUD_SQL_PASSWORD,CLOUD_SQL_DATABASE_NAME=$CLOUD_SQL_DATABASE_NAME,CLOUD_SQL_CONNECTION_NAME=$CLOUD_SQL_CONNECTION_NAME" \
 
 
