@@ -53,9 +53,9 @@ jobs:
       MS_NAME: ${{ secrets.APPLICATION }}
       REGION: ${{ secrets.REGION }}
       ENTRY_POINT: http
-      DB_LOCAL_HOST: =  ${{ secrets.DB_LOCAL_HOST }}
+      DB_LOCAL_HOST: ${{ secrets.DB_LOCAL_HOST }}
       CLOUD_SQL_USERNAME:  ${{ secrets.CLOUD_SQL_USERNAME }}
-      CLOUD_SQL_PASSWORD: = ${{ secrets.CLOUD_SQL_PASSWORD }}
+      CLOUD_SQL_PASSWORD: ${{ secrets.CLOUD_SQL_PASSWORD }}
       CLOUD_SQL_DATABASE_NAME: ${{ secrets.CLOUD_SQL_PASSWORD }}
       CLOUD_SQL_CONNECTION_NAME:  ${{ secrets.CLOUD_SQL_CONNECTION_NAME }}
       VPC_CONNECTOR:  ${{ secrets.VPC_CONNECTOR }}
