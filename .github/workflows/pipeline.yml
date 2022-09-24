@@ -19,13 +19,29 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install Requirements
-        run:  pip install flask flask-wtf pytest pytest-cov
+        run:  Flask flask-wtf flask-cors PyMySQL cryptography gunicorn
 
   Build:
+    needs: Tests
     name: Build
     runs-on: ubuntu-latest
     steps: 
 
       - name: Checkout Repo
         uses: actions/checkout@v2
+
+      - name: Docker Login
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+        run: | 
+          echo '${{ secrets.GCP_CREDENTIALS }}' > key.json
+          cat key.json | docker login -u _json_key --password-stdin https://us-central1-docker.pkg.dev/
+
+      - name: Build Image & Push
+        env: 
+          ARTIFACT_REGISTRY_REPO: ${{ secrets.ARTIFACT_REGISTRY_REPO }}
+        run: | 
+          docker build -t ${{ secrets.ARTIFACT_REGISTRY_REPO }}/myapp:latest .
+          docker push ${{ secrets.ARTIFACT_REGISTRY_REPO }}/myapp:latest
+
 
